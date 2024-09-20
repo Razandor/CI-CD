@@ -37,3 +37,8 @@ jobs:
         run: |
           # Тегируем образ и пушим его в Docker Hub
           docker tag myapp:latest ${{ secrets.DOC_USE_NAME }}/myapp:latest && docker push ${{ secrets.DOC_USE_NAME }}/myapp:latest
+      - name: Notify Telegram
+        if: always()  # Уведомление будет отправлено в любом случае (успех или ошибка)
+        run: |
+         curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" -d "text=Build ${{ job.status }}: ${{ github.event_name }} on branch ${{ github.ref }}. View details at ${{ github.run_url }}"
+
