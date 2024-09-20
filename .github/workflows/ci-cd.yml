@@ -1,37 +1,39 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline  # Название пайплайна
 
 on:
-  push:
+  push:  # Событие, при котором запускается пайплайн
     branches:
-      - main
-  pull_request:
+      - main  # Запуск при пуше в ветку main
+  pull_request:  # Запуск при создании запроса на слияние
     branches:
-      - main
+      - main  # Запуск для запросов на слияние в ветку main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build:  # Определяем задачу с именем "build"
+    runs-on: ubuntu-latest  # Используем последнюю версию Ubuntu как среду выполнения
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    steps:  # Шаги выполнения задачи
+      - name: Checkout code  # Шаг для получения кода из репозитория
+        uses: actions/checkout@v2  # Используем GitHub Action для клонирования репозитория
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx  # Шаг для настройки Docker Buildx
+        uses: docker/setup-buildx-action@v2  # Используем официальный Action для настройки Buildx
 
-      - name: Build Docker image
-        run: docker build -t myapp:latest .
+      - name: Build Docker image  # Шаг для сборки Docker-образа
+        run: docker build -t myapp:latest .  # Выполняем команду для сборки образа с тегом "latest"
 
-      - name: Run tests
+      - name: Run tests  # Шаг для запуска тестов
         run: |
           # Пример теста, вы можете использовать Pytest или другой тестировщик
-          docker run --rm myapp:latest python -c "print('Tests passed')"
+          docker run --rm myapp:latest python -c "print('Tests passed')"  # Запускаем контейнер и выполняем простую проверку
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Login to Docker Hub  # Шаг для входа в Docker Hub
+        uses: docker/login-action@v2  # Используем Action для аутентификации в Docker Hub
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}  # Получаем имя пользователя из секретов репозитория
+          password: ${{ secrets.DOCKER_PASSWORD }}  # Получаем пароль из секретов репозитория
 
-      - name: Push Docker image
-        run: docker tag myapp:latest ${{ secrets.DOCKER_USERNAME }}/myapp:latest && docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
+      - name: Push Docker image  # Шаг для отправки образа в Docker Hub
+        run: |
+          # Тегируем образ и пушим его в Docker Hub
+          docker tag myapp:latest ${{ secrets.DOCKER_USERNAME }}/myapp:latest && docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
